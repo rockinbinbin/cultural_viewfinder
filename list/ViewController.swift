@@ -20,29 +20,62 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }()
     
     var items = [NSManagedObject]()
+    
+    var likedItems = [NSManagedObject]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.pinToEdgesOfSuperview()
         self.view.backgroundColor = UIColor.whiteColor()
         self.configureNavBar()
-
+        
+        
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-
+        self.populateItems()
+        self.populateLikedItems()
+    }
+    
+    func populateItems() {
         let appDelegate =
         UIApplication.sharedApplication().delegate as! AppDelegate
         
         let managedContext = appDelegate.managedObjectContext
 
         let fetchRequest = NSFetchRequest(entityName: "Item")
-
+        
         do {
             let results =
             try managedContext.executeFetchRequest(fetchRequest)
             items = results as! [NSManagedObject]
+            
+            print(items)
+            
+        } catch let error as NSError {
+            print("Could not fetch \(error), \(error.userInfo)")
+        }
+    }
+    
+    func populateLikedItems() {
+        let appDelegate =
+        UIApplication.sharedApplication().delegate as! AppDelegate
+        
+        let managedContext = appDelegate.managedObjectContext
+        
+        let predicate = NSPredicate(format: "liked = '1'")
+        
+        let fetchRequest = NSFetchRequest(entityName: "Item")
+        fetchRequest.predicate = predicate
+        
+        do {
+            let results =
+            try managedContext.executeFetchRequest(fetchRequest)
+            likedItems = results as! [NSManagedObject]
+            
+            print(likedItems)
+            
         } catch let error as NSError {
             print("Could not fetch \(error), \(error.userInfo)")
         }
@@ -105,6 +138,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             insertIntoManagedObjectContext: managedContext)
 
         item.setValue(name, forKey: "name")
+        
+        if (name == "huh") {
+            item.setValue("produce", forKey: "category")
+            item.setValue(true, forKey: "liked")
+        }
+        
+        else {
+            item.setValue("meat", forKey: "category")
+            item.setValue(false, forKey: "liked")
+        }
+        
+        print(item.valueForKey("liked"))
 
         do {
             try managedContext.save()

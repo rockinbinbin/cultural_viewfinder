@@ -16,7 +16,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        
+        UINavigationBar.appearance().setBackgroundImage(UIImage(), forBarPosition: .Any, barMetrics: .Default)
+        UINavigationBar.appearance().shadowImage = UIImage()
+        
+        self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
+        let nav = UINavigationController(rootViewController: ViewController())
+        self.window?.rootViewController = nav
+        nav.navigationBar.barStyle = .Black
+        
+        self.window?.makeKeyAndVisible()
+
         return true
     }
 

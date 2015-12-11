@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
@@ -14,16 +15,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
-        
-//        // Hide the tableview until things loaded
-//        tableView.hidden = true
-//        tableView.backgroundColor = UIColor.whiteColor()
-        
         self.view.addSubview(tableView)
         return tableView
     }()
     
-    var names = [String]()
+    var items = [NSManagedObject]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +27,25 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.view.backgroundColor = UIColor.whiteColor()
         self.configureNavBar()
 
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+
+        let appDelegate =
+        UIApplication.sharedApplication().delegate as! AppDelegate
+        
+        let managedContext = appDelegate.managedObjectContext
+
+        let fetchRequest = NSFetchRequest(entityName: "Item")
+
+        do {
+            let results =
+            try managedContext.executeFetchRequest(fetchRequest)
+            items = results as! [NSManagedObject]
+        } catch let error as NSError {
+            print("Could not fetch \(error), \(error.userInfo)")
+        }
     }
     
     func configureNavBar() {
@@ -58,7 +73,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             handler: { (action:UIAlertAction) -> Void in
                 
                 let textField = alert.textFields!.first
-                self.names.append(textField!.text!)
+                self.saveName(textField!.text!)
                 self.tableView.reloadData()
         })
         
@@ -77,11 +92,32 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             animated: true,
             completion: nil)
     }
+    
+    func saveName(name: String) {
+        let appDelegate =
+        UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext = appDelegate.managedObjectContext
+
+        let entity =  NSEntityDescription.entityForName("Item",
+            inManagedObjectContext:managedContext)
+        
+        let item = NSManagedObject(entity: entity!,
+            insertIntoManagedObjectContext: managedContext)
+
+        item.setValue(name, forKey: "name")
+
+        do {
+            try managedContext.save()
+            items.append(item)
+        } catch let error as NSError  {
+            print("Could not save \(error), \(error.userInfo)")
+        }
+    }
 
     // MARK: - Tableview Datasource
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.names.count
+        return self.items.count
     }
     
     func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -107,8 +143,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             cell?.selectionStyle = .None
         }
         
-        if (names.count > indexPath.row) {
-            cell?.companyLabel.text = names[indexPath.row]
+        if (items.count > indexPath.row) {
+            let item = items[indexPath.row]
+            cell?.companyLabel.text = item.valueForKey("name") as? String
         }
         
         return cell!

@@ -10,12 +10,12 @@ import UIKit
 
 class listItem: UITableViewCell {
     
-    public lazy var companyLabel: UILabel = {
+    internal lazy var companyLabel: UILabel = {
         let companyLabel = UILabel()
         companyLabel.translatesAutoresizingMaskIntoConstraints = false;
         companyLabel.numberOfLines = 0
         companyLabel.textColor = UIColor.grayColor()
-        companyLabel.font = UIFont(name: "AvenirNext-Medium", size: 14.0)
+        companyLabel.font = UIFont(name: "AvenirNext-Medium", size: 16.0)
         self.contentView.addSubview(companyLabel)
         return companyLabel
     }()

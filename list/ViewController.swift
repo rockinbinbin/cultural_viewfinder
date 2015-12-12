@@ -20,7 +20,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }()
     
     var items = [NSManagedObject]()
-    
     var likedItems = [NSManagedObject]()
 
     override func viewDidLoad() {
@@ -34,11 +33,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        self.populateItems()
-        self.populateLikedItems()
+        self.fetchAllItems()
+        self.fetchLikedItems()
+        
+        if (items.count == 0) {
+            self.setInitialCoreData()
+        }
+        
+
     }
     
-    func populateItems() {
+    func fetchAllItems() {
         let appDelegate =
         UIApplication.sharedApplication().delegate as! AppDelegate
         
@@ -51,14 +56,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             try managedContext.executeFetchRequest(fetchRequest)
             items = results as! [NSManagedObject]
             
-            print(items)
+            //print(items)
             
         } catch let error as NSError {
             print("Could not fetch \(error), \(error.userInfo)")
         }
     }
     
-    func populateLikedItems() {
+    func fetchLikedItems() {
         let appDelegate =
         UIApplication.sharedApplication().delegate as! AppDelegate
         
@@ -74,7 +79,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             try managedContext.executeFetchRequest(fetchRequest)
             likedItems = results as! [NSManagedObject]
             
-            print(likedItems)
+            //print(likedItems)
             
         } catch let error as NSError {
             print("Could not fetch \(error), \(error.userInfo)")
@@ -97,6 +102,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func addPressed() {
+        let searchVC = SearchViewController()
+        searchVC.items = items
+        searchVC.likedItems = likedItems
+        self.navigationController?.pushViewController(searchVC, animated: true)
+    }
+    
+    func createNewItem() {
         let alert = UIAlertController(title: "New Name",
             message: "Add a new name",
             preferredStyle: .Alert)
@@ -126,6 +138,120 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             completion: nil)
     }
     
+    func setInitialCoreData() {
+        let appDelegate =
+        UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext = appDelegate.managedObjectContext
+        
+        let entity =  NSEntityDescription.entityForName("Item",
+            inManagedObjectContext:managedContext)
+        
+        var item = NSManagedObject(entity: entity!,
+            insertIntoManagedObjectContext: managedContext)
+        
+        item.setValue("broccoli", forKey: "name")
+        item.setValue("produce", forKey: "category")
+        item.setValue(true, forKey: "liked")
+        items.append(item)
+        
+        do {
+            try managedContext.save()
+            
+        } catch let error as NSError  {
+            print("Could not save \(error), \(error.userInfo)")
+        }
+        
+        item = NSManagedObject(entity: entity!,
+            insertIntoManagedObjectContext: managedContext)
+        
+        item.setValue("carrots", forKey: "name")
+        item.setValue("produce", forKey: "category")
+        item.setValue(false, forKey: "liked")
+        items.append(item)
+        
+        do {
+            try managedContext.save()
+            
+        } catch let error as NSError  {
+            print("Could not save \(error), \(error.userInfo)")
+        }
+        
+        item = NSManagedObject(entity: entity!,
+            insertIntoManagedObjectContext: managedContext)
+        
+        item.setValue("chicken", forKey: "name")
+        item.setValue("meat", forKey: "category")
+        item.setValue(false, forKey: "liked")
+        items.append(item)
+        
+        do {
+            try managedContext.save()
+            
+        } catch let error as NSError  {
+            print("Could not save \(error), \(error.userInfo)")
+        }
+        
+        item = NSManagedObject(entity: entity!,
+            insertIntoManagedObjectContext: managedContext)
+        
+        item.setValue("pasta", forKey: "name")
+        item.setValue("grain", forKey: "category")
+        item.setValue(true, forKey: "liked")
+        items.append(item)
+        
+        do {
+            try managedContext.save()
+            
+        } catch let error as NSError  {
+            print("Could not save \(error), \(error.userInfo)")
+        }
+    
+        item = NSManagedObject(entity: entity!,
+            insertIntoManagedObjectContext: managedContext)
+        
+        item.setValue("chocolate", forKey: "name")
+        item.setValue("dessert", forKey: "category")
+        item.setValue(true, forKey: "liked")
+        items.append(item)
+        
+        do {
+            try managedContext.save()
+            
+        } catch let error as NSError  {
+            print("Could not save \(error), \(error.userInfo)")
+        }
+        
+        item = NSManagedObject(entity: entity!,
+            insertIntoManagedObjectContext: managedContext)
+        
+        item.setValue("ice cream", forKey: "name")
+        item.setValue("dessert", forKey: "category")
+        item.setValue(true, forKey: "liked")
+        items.append(item)
+        
+        do {
+            try managedContext.save()
+            
+        } catch let error as NSError  {
+            print("Could not save \(error), \(error.userInfo)")
+        }
+        
+        item = NSManagedObject(entity: entity!,
+            insertIntoManagedObjectContext: managedContext)
+        
+        item.setValue("zucchini", forKey: "name")
+        item.setValue("produce", forKey: "category")
+        item.setValue(false, forKey: "liked")
+        items.append(item)
+
+        do {
+            try managedContext.save()
+            
+        } catch let error as NSError  {
+            print("Could not save \(error), \(error.userInfo)")
+        }
+    }
+    
     func saveName(name: String) {
         let appDelegate =
         UIApplication.sharedApplication().delegate as! AppDelegate
@@ -139,17 +265,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
         item.setValue(name, forKey: "name")
         
-        if (name == "huh") {
-            item.setValue("produce", forKey: "category")
-            item.setValue(true, forKey: "liked")
-        }
+//        if (name == "huh") {
+//            item.setValue("produce", forKey: "category")
+//            item.setValue(true, forKey: "liked")
+//        }
+//        
+//        else {
+//            item.setValue("meat", forKey: "category")
+//            item.setValue(false, forKey: "liked")
+//        }
         
-        else {
-            item.setValue("meat", forKey: "category")
-            item.setValue(false, forKey: "liked")
-        }
-        
-        print(item.valueForKey("liked"))
+        //print(item.valueForKey("name"))
 
         do {
             try managedContext.save()

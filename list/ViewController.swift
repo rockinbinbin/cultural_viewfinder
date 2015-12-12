@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import Foundation
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
@@ -21,26 +22,91 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     var items = [NSManagedObject]()
     var likedItems = [NSManagedObject]()
+    
+    var dateResults  = [NSManagedObject]()
+    var date : NSDate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.pinToEdgesOfSuperview()
         self.view.backgroundColor = UIColor.whiteColor()
         self.configureNavBar()
-        
-        
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         self.fetchAllItems()
         self.fetchLikedItems()
+        self.fetchDate()
         
         if (items.count == 0) {
             self.setInitialCoreData()
         }
         
+        if (date == nil) {
+            self.initializeDate()
+        }
+    }
+    
+    func fetchDate() {
+        let appDelegate =
+        UIApplication.sharedApplication().delegate as! AppDelegate
+        
+        let managedContext = appDelegate.managedObjectContext
+        
+        let fetchRequest = NSFetchRequest(entityName: "CurrentDate")
+        
+        do {
+            let results =
+            try managedContext.executeFetchRequest(fetchRequest)
+            dateResults = results as! [NSManagedObject]
+            
+            //print(dateResults)
+            
+            if (dateResults.count != 0) {
+                date = NSDate()
+                date = dateResults[dateResults.count - 1].valueForKey("date") as? NSDate
+            }
 
+        } catch let error as NSError {
+            print("Could not fetch \(error), \(error.userInfo)")
+        }
+        
+    }
+    
+//    func configureDate() {
+//        let date = NSDate()
+//        let calendar = NSCalendar.currentCalendar()
+//        let hour = calendar.component(NSCalendarUnit.Hour, fromDate: date)
+//        let minutes = calendar.component(NSCalendarUnit.Minute, fromDate: date)
+//        let day = calendar.component(NSCalendarUnit.Day, fromDate: date)
+//        let month = calendar.component(NSCalendarUnit.Month, fromDate: date)
+//        let year = calendar.component(NSCalendarUnit.Year, fromDate: date)
+//    }
+    
+    func initializeDate() {
+        
+        date = NSDate()
+        
+        let appDelegate =
+        UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext = appDelegate.managedObjectContext
+        
+        let entity =  NSEntityDescription.entityForName("CurrentDate",
+            inManagedObjectContext:managedContext)
+        
+        
+        let currentDate = NSManagedObject(entity: entity!,
+            insertIntoManagedObjectContext: managedContext)
+        
+        currentDate.setValue(date, forKey: "date")
+        
+        do {
+            try managedContext.save()
+            
+        } catch let error as NSError  {
+            print("Could not save \(error), \(error.userInfo)")
+        }
     }
     
     func fetchAllItems() {
@@ -54,6 +120,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         do {
             let results =
             try managedContext.executeFetchRequest(fetchRequest)
+            
+            if (results.count != 0) {
+                
+            }
+            
             items = results as! [NSManagedObject]
             
             //print(items)
@@ -90,6 +161,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.navigationController?.navigationBar.barTintColor = UIColor(hue: 216/360, saturation: 0.14, brightness: 0.21, alpha: 1)
         self.navigationController?.navigationBar.tintColor = UIColor(hue: 216/360, saturation: 0.14, brightness: 0.21, alpha: 1)
         self.navigationController?.navigationBar.translucent = false
+        
+        let navLabel = UILabel()
+        navLabel.textColor = UIColor.whiteColor()
+        navLabel.backgroundColor = UIColor.clearColor()
+        navLabel.textAlignment = NSTextAlignment.Center
+        navLabel.font = UIFont(name: "AvenirNext-Medium", size: 20)
+        navLabel.text = "Today"
+        self.navigationItem.titleView = navLabel
+        navLabel.sizeToFit()
         
         let addButton  = UIBarButtonItem(image: UIImage(named: "whitePlus"), style: .Plain, target: self, action: Selector("addPressed"))
          addButton.tintColor = UIColor.whiteColor()
@@ -139,111 +219,33 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func setInitialCoreData() {
+        self.initializeItem("broccoli", category: "produce", liked: true)
+        self.initializeItem("carrots", category: "produce", liked: true)
+        self.initializeItem("chicken", category: "meat", liked: false)
+        self.initializeItem("pasta", category: "grain", liked: true)
+        self.initializeItem("chocolate", category: "dessert", liked: true)
+        self.initializeItem("ice cream", category: "dessert", liked: true)
+        self.initializeItem("zucchini", category: "produce", liked: false)
+    }
+    
+    func initializeItem(name : String, category : String, liked : Bool) {
+        
         let appDelegate =
         UIApplication.sharedApplication().delegate as! AppDelegate
         let managedContext = appDelegate.managedObjectContext
         
         let entity =  NSEntityDescription.entityForName("Item",
             inManagedObjectContext:managedContext)
-        
-        var item = NSManagedObject(entity: entity!,
-            insertIntoManagedObjectContext: managedContext)
-        
-        item.setValue("broccoli", forKey: "name")
-        item.setValue("produce", forKey: "category")
-        item.setValue(true, forKey: "liked")
-        items.append(item)
-        
-        do {
-            try managedContext.save()
-            
-        } catch let error as NSError  {
-            print("Could not save \(error), \(error.userInfo)")
-        }
-        
-        item = NSManagedObject(entity: entity!,
-            insertIntoManagedObjectContext: managedContext)
-        
-        item.setValue("carrots", forKey: "name")
-        item.setValue("produce", forKey: "category")
-        item.setValue(false, forKey: "liked")
-        items.append(item)
-        
-        do {
-            try managedContext.save()
-            
-        } catch let error as NSError  {
-            print("Could not save \(error), \(error.userInfo)")
-        }
-        
-        item = NSManagedObject(entity: entity!,
-            insertIntoManagedObjectContext: managedContext)
-        
-        item.setValue("chicken", forKey: "name")
-        item.setValue("meat", forKey: "category")
-        item.setValue(false, forKey: "liked")
-        items.append(item)
-        
-        do {
-            try managedContext.save()
-            
-        } catch let error as NSError  {
-            print("Could not save \(error), \(error.userInfo)")
-        }
-        
-        item = NSManagedObject(entity: entity!,
-            insertIntoManagedObjectContext: managedContext)
-        
-        item.setValue("pasta", forKey: "name")
-        item.setValue("grain", forKey: "category")
-        item.setValue(true, forKey: "liked")
-        items.append(item)
-        
-        do {
-            try managedContext.save()
-            
-        } catch let error as NSError  {
-            print("Could not save \(error), \(error.userInfo)")
-        }
-    
-        item = NSManagedObject(entity: entity!,
-            insertIntoManagedObjectContext: managedContext)
-        
-        item.setValue("chocolate", forKey: "name")
-        item.setValue("dessert", forKey: "category")
-        item.setValue(true, forKey: "liked")
-        items.append(item)
-        
-        do {
-            try managedContext.save()
-            
-        } catch let error as NSError  {
-            print("Could not save \(error), \(error.userInfo)")
-        }
-        
-        item = NSManagedObject(entity: entity!,
-            insertIntoManagedObjectContext: managedContext)
-        
-        item.setValue("ice cream", forKey: "name")
-        item.setValue("dessert", forKey: "category")
-        item.setValue(true, forKey: "liked")
-        items.append(item)
-        
-        do {
-            try managedContext.save()
-            
-        } catch let error as NSError  {
-            print("Could not save \(error), \(error.userInfo)")
-        }
-        
-        item = NSManagedObject(entity: entity!,
-            insertIntoManagedObjectContext: managedContext)
-        
-        item.setValue("zucchini", forKey: "name")
-        item.setValue("produce", forKey: "category")
-        item.setValue(false, forKey: "liked")
-        items.append(item)
 
+        
+        let item = NSManagedObject(entity: entity!,
+            insertIntoManagedObjectContext: managedContext)
+        
+        item.setValue(name, forKey: "name")
+        item.setValue(category, forKey: "category")
+        item.setValue(liked, forKey: "liked")
+        items.append(item)
+        
         do {
             try managedContext.save()
             

@@ -145,9 +145,6 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 if let managedObject = item as? NSManagedObject {
                     let range = (managedObject.valueForKey("name")?.rangeOfString(text!, options: .CaseInsensitiveSearch))!
                     if (range.location != NSNotFound) {
-                        
-                        print(range)
-                
                         return true
                     }
                 }

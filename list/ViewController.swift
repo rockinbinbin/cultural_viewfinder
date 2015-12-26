@@ -10,27 +10,56 @@ import UIKit
 import CoreData
 import Foundation
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+// Core data:
+// Item = pre-exploration questions
+// Answer = question + answer + date + picture?
+// Journal = collection of answers + city
+
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TableViewCellDelegate {
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.hidden = true
         self.view.addSubview(tableView)
         return tableView
     }()
     
+//    private lazy var newJournalView: UIView = {
+//        let newJournalView = UIView()
+//        newJournalView.backgroundColor = UIColor.whiteColor()
+//        
+//        let title = UILabel()
+//        title.translatesAutoresizingMaskIntoConstraints = false;
+//        title.numberOfLines = 0
+//        title.text = "HI"
+//        title.textColor = UIColor.grayColor()
+//        title.font = UIFont(name: "AvenirNext-Medium", size: 16.0)
+//        newJournalView.addSubview(title)
+//        
+//        self.view.addSubview(newJournalView)
+//        return newJournalView
+//    }()
+    
     var items = [NSManagedObject]()
     var likedItems = [NSManagedObject]()
+    var journalItems = [NSManagedObject]()
     
     var dateResults  = [NSManagedObject]()
     var date : NSDate?
+    
+    var newJournalView : NewJournalEditView?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.pinToEdgesOfSuperview()
         self.view.backgroundColor = UIColor.whiteColor()
         self.configureNavBar()
+        self.createLayout()
+    }
+    
+    func createLayout() {
+        tableView.pinToEdgesOfSuperview()
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -38,6 +67,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.fetchAllItems()
         self.fetchLikedItems()
         self.fetchDate()
+        self.fetchJournalItems()
         
         if (items.count == 0) {
             self.setInitialCoreData()
@@ -45,6 +75,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         if (date == nil) {
             self.initializeDate()
+        }
+        
+        if (journalItems.count == 0) {
+            
+            // initialize view to create journal entry here
+            if (newJournalView == nil) {
+                newJournalView = NewJournalEditView(items: items, size: self.view.frame.size)
+            }
+           self.view.addSubview(newJournalView!)
+            newJournalView?.sizeToWidth(self.view.frame.size.width)
+            newJournalView?.sizeToHeight(self.view.frame.size.height)
+            
+        }
+        else {
+            self.tableView.hidden = false
         }
     }
     
@@ -121,11 +166,36 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             let results =
             try managedContext.executeFetchRequest(fetchRequest)
             
-            if (results.count != 0) {
-                
-            }
+//            if (results.count != 0) {
+//                
+//            }
             
             items = results as! [NSManagedObject]
+            
+            //print(items)
+            
+        } catch let error as NSError {
+            print("Could not fetch \(error), \(error.userInfo)")
+        }
+    }
+    
+    func fetchJournalItems() {
+        let appDelegate =
+        UIApplication.sharedApplication().delegate as! AppDelegate
+        
+        let managedContext = appDelegate.managedObjectContext
+        
+        let fetchRequest = NSFetchRequest(entityName: "Journal")
+        
+        do {
+            let results =
+            try managedContext.executeFetchRequest(fetchRequest)
+            
+//            if (results.count != 0) {
+//                
+//            }
+            
+            journalItems = results as! [NSManagedObject]
             
             //print(items)
             
@@ -219,13 +289,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func setInitialCoreData() {
-        self.initializeItem("broccoli", category: "produce", liked: true)
-        self.initializeItem("carrots", category: "produce", liked: true)
-        self.initializeItem("chicken", category: "meat", liked: false)
-        self.initializeItem("pasta", category: "grain", liked: true)
-        self.initializeItem("chocolate", category: "dessert", liked: true)
-        self.initializeItem("ice cream", category: "dessert", liked: true)
-        self.initializeItem("zucchini", category: "produce", liked: false)
+        self.initializeItem("Have you heard positive or negative things about this culture/area? What were they?", category: "produce", liked: true)
+        
+        self.initializeItem("When you told your friends and family where you were going to this place, what did they say about it? How did you feel about these comments?", category: "produce", liked: true)
+        
+        self.initializeItem("When you travel, do you stay with people of that area or in a hotel for foreigners?", category: "meat", liked: false)
+        
+        self.initializeItem("When you go to another place do you eat at local, small restaurants or in restaurants of your own ethnicity?", category: "grain", liked: true)
+        
+
     }
     
     func initializeItem(name : String, category : String, liked : Bool) {
@@ -266,18 +338,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             insertIntoManagedObjectContext: managedContext)
 
         item.setValue(name, forKey: "name")
-        
-//        if (name == "huh") {
-//            item.setValue("produce", forKey: "category")
-//            item.setValue(true, forKey: "liked")
-//        }
-//        
-//        else {
-//            item.setValue("meat", forKey: "category")
-//            item.setValue(false, forKey: "liked")
-//        }
-        
-        //print(item.valueForKey("name"))
 
         do {
             try managedContext.save()
@@ -285,6 +345,34 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         } catch let error as NSError  {
             print("Could not save \(error), \(error.userInfo)")
         }
+    }
+    
+    func toDoItemDeleted(toDoItem: NSManagedObject) {
+        let index = (items as NSArray).indexOfObject(toDoItem)
+        if index == NSNotFound { return }
+        
+        let appDelegate =
+        UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext = appDelegate.managedObjectContext
+        
+//        let entity =  NSEntityDescription.entityForName("Item",
+//            inManagedObjectContext:managedContext)
+        
+        managedContext.deleteObject(toDoItem)
+        
+        do {
+            try managedContext.save()
+            items.removeAtIndex(index)
+        } catch let error as NSError  {
+            print("Could not save \(error), \(error.userInfo)")
+        }
+
+        
+        // use the UITableView to animate the removal of this row
+        tableView.beginUpdates()
+        let indexPathForRow = NSIndexPath(forRow: index, inSection: 0)
+        tableView.deleteRowsAtIndexPaths([indexPathForRow], withRowAnimation: .Fade)
+        tableView.endUpdates()    
     }
 
     // MARK: - Tableview Datasource
@@ -306,18 +394,30 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        
+        print(self.tableView.subviews.count)
+        
         let cellId = "listItem"
         var cell: listItem? = tableView.dequeueReusableCellWithIdentifier(cellId) as? listItem
-        
-        //cell?.layoutSubviews()
         
         if cell == nil {
             cell = listItem()
             cell?.selectionStyle = .None
         }
         
+        cell!.delegate = self
+        
+//        let rect = CGRectMake(0, 0, self.view.frame.size.width, 100 * CGFloat(self.items.count))
+//        let colorView = UIView(frame: rect)
+//        colorView.backgroundColor = UIColor.greenColor()
+//        //        colorView.alpha = 1.0
+//        cell!.insertSubview(colorView, atIndex: 0)
+//
+//        cell?.backgroundColor = UIColor.whiteColor()
+//        
         if (items.count > indexPath.row) {
             let item = items[indexPath.row]
+            cell!.item = item
             cell?.companyLabel.text = item.valueForKey("name") as? String
         }
         

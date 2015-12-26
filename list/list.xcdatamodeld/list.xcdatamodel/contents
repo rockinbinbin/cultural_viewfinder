@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9057" systemVersion="14F27" minimumToolsVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9525" systemVersion="14F27" minimumToolsVersion="Automatic">
     <entity name="CurrentDate" syncable="YES">
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
     </entity>
     <entity name="Item" syncable="YES">
+        <attribute name="answer" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="category" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="liked" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
+    <entity name="Journal" syncable="YES">
+        <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="place" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="relationship" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Item" syncable="YES"/>
+    </entity>
     <elements>
         <element name="CurrentDate" positionX="-63" positionY="9" width="128" height="60"/>
-        <element name="Item" positionX="-63" positionY="-18" width="128" height="90"/>
+        <element name="Item" positionX="-63" positionY="-18" width="128" height="105"/>
+        <element name="Journal" positionX="-63" positionY="9" width="128" height="90"/>
     </elements>
 </model>

@@ -62,6 +62,12 @@ public class NewJournalEditView: UIView, UITextFieldDelegate, UITextViewDelegate
     
     var count = 0
     
+    var firstAnswer : String?
+    var secondAnswer : String?
+    var thirdAnswer : String?
+    var fourthAnswer : String?
+    var fifthAnswer : String?
+    
     
     public lazy var cityTextField: UITextField = {
         let cityTextField = UITextField()
@@ -81,7 +87,6 @@ public class NewJournalEditView: UIView, UITextFieldDelegate, UITextViewDelegate
         textField1.delegate = self
         textField1.textColor = UIColor.blackColor()
         textField1.font = UIFont(name: "AvenirNext-Regular", size: 16)
-        //textField1.placeholder = "Enter text here"
         return textField1
     }()
     

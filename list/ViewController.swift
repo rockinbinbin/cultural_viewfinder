@@ -82,11 +82,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             // initialize view to create journal entry here
             if (newJournalView == nil) {
                 newJournalView = NewJournalEditView(items: items, size: self.view.frame.size)
+                
+                
             }
            self.view.addSubview(newJournalView!)
             newJournalView?.sizeToWidth(self.view.frame.size.width)
             newJournalView?.sizeToHeight(self.view.frame.size.height)
-            
+            self.navigationController?.navigationBarHidden = true
         }
         else {
             self.tableView.hidden = false
@@ -228,8 +230,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func configureNavBar() {
-        self.navigationController?.navigationBar.barTintColor = UIColor(hue: 216/360, saturation: 0.14, brightness: 0.21, alpha: 1)
-        self.navigationController?.navigationBar.tintColor = UIColor(hue: 216/360, saturation: 0.14, brightness: 0.21, alpha: 1)
+//        self.navigationController?.navigationBar.barTintColor = UIColor(hue: 216/360, saturation: 0.14, brightness: 0.21, alpha: 1)
+//        self.navigationController?.navigationBar.tintColor = UIColor(hue: 216/360, saturation: 0.14, brightness: 0.21, alpha: 1)
+        self.navigationController?.navigationBar.barTintColor = UIColor.whiteColor()
+        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         self.navigationController?.navigationBar.translucent = false
         
         let navLabel = UILabel()
@@ -237,13 +241,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         navLabel.backgroundColor = UIColor.clearColor()
         navLabel.textAlignment = NSTextAlignment.Center
         navLabel.font = UIFont(name: "AvenirNext-Medium", size: 20)
-        navLabel.text = "Today"
+        //navLabel.text = "Today"
         self.navigationItem.titleView = navLabel
         navLabel.sizeToFit()
         
-        let addButton  = UIBarButtonItem(image: UIImage(named: "whitePlus"), style: .Plain, target: self, action: Selector("addPressed"))
-         addButton.tintColor = UIColor.whiteColor()
-        self.navigationItem.rightBarButtonItem = addButton
+//        let addButton  = UIBarButtonItem(image: UIImage(named: "whitePlus"), style: .Plain, target: self, action: Selector("addPressed"))
+//         addButton.tintColor = UIColor.whiteColor()
+//        self.navigationItem.rightBarButtonItem = addButton
     }
 
     override func didReceiveMemoryWarning() {
@@ -292,6 +296,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.initializeItem("Have you heard positive or negative things about this culture/area? What were they?", category: "produce", liked: true)
         
         self.initializeItem("When you told your friends and family where you were going to this place, what did they say about it? How did you feel about these comments?", category: "produce", liked: true)
+        
+         self.initializeItem("Do you feel less safe in this area than your home town?", category: "meat", liked: false)
         
         self.initializeItem("When you travel, do you stay with people of that area or in a hotel for foreigners?", category: "meat", liked: false)
         

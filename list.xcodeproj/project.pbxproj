@@ -40,6 +40,7 @@
 
 /* Begin PBXFileReference section */
 		00374E0F1C2E798300C900CD /* NewJournalEditView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewJournalEditView.swift; sourceTree = "<group>"; };
+		00374E111C2E88EA00C900CD /* list-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "list-Bridging-Header.h"; sourceTree = "<group>"; };
 		00D3CE7D1C1A59DE0053BB8A /* list.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = list.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		00D3CE801C1A59DE0053BB8A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		00D3CE821C1A59DE0053BB8A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -118,6 +119,7 @@
 				00D3CE8C1C1A59DE0053BB8A /* LaunchScreen.storyboard */,
 				00D3CE8F1C1A59DE0053BB8A /* Info.plist */,
 				00D3CE871C1A59DE0053BB8A /* list.xcdatamodeld */,
+				00374E111C2E88EA00C900CD /* list-Bridging-Header.h */,
 			);
 			path = list;
 			sourceTree = "<group>";
@@ -202,7 +204,7 @@
 		00D3CE751C1A59DE0053BB8A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0710;
+				LastSwiftUpdateCheck = 0720;
 				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = robin;
 				TargetAttributes = {
@@ -418,11 +420,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = list/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.list;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "list/list-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -430,11 +435,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = list/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.list;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "list/list-Bridging-Header.h";
 			};
 			name = Release;
 		};

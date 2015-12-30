@@ -15,7 +15,7 @@ import Foundation
 // Answer = question + answer + date + picture?
 // Journal = collection of answers + city
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TableViewCellDelegate {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TableViewCellDelegate, journalFinished {
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -25,22 +25,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.view.addSubview(tableView)
         return tableView
     }()
-    
-//    private lazy var newJournalView: UIView = {
-//        let newJournalView = UIView()
-//        newJournalView.backgroundColor = UIColor.whiteColor()
-//        
-//        let title = UILabel()
-//        title.translatesAutoresizingMaskIntoConstraints = false;
-//        title.numberOfLines = 0
-//        title.text = "HI"
-//        title.textColor = UIColor.grayColor()
-//        title.font = UIFont(name: "AvenirNext-Medium", size: 16.0)
-//        newJournalView.addSubview(title)
-//        
-//        self.view.addSubview(newJournalView)
-//        return newJournalView
-//    }()
     
     var items = [NSManagedObject]()
     var likedItems = [NSManagedObject]()
@@ -62,6 +46,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tableView.pinToEdgesOfSuperview()
     }
     
+    func reloadViewController() {
+        self.newJournalView?.hidden = true
+        self.viewWillAppear(true)
+        self.tableView.reloadData()
+    }
+    
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         self.fetchAllItems()
@@ -81,8 +71,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             
             // initialize view to create journal entry here
             if (newJournalView == nil) {
-                newJournalView = NewJournalEditView(items: items, size: self.view.frame.size)
-                
+                newJournalView = NewJournalEditView(items: items, size: self.view.frame.size, ViewController: self)
+                newJournalView?.delegate = self
                 
             }
            self.view.addSubview(newJournalView!)
@@ -168,13 +158,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             let results =
             try managedContext.executeFetchRequest(fetchRequest)
             
-//            if (results.count != 0) {
-//                
-//            }
-            
             items = results as! [NSManagedObject]
-            
-            //print(items)
             
         } catch let error as NSError {
             print("Could not fetch \(error), \(error.userInfo)")
@@ -193,13 +177,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             let results =
             try managedContext.executeFetchRequest(fetchRequest)
             
-//            if (results.count != 0) {
-//                
-//            }
-            
             journalItems = results as! [NSManagedObject]
-            
-            //print(items)
             
         } catch let error as NSError {
             print("Could not fetch \(error), \(error.userInfo)")
@@ -354,7 +332,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func toDoItemDeleted(toDoItem: NSManagedObject) {
-        let index = (items as NSArray).indexOfObject(toDoItem)
+        let index = (journalItems as NSArray).indexOfObject(toDoItem)
         if index == NSNotFound { return }
         
         let appDelegate =
@@ -368,7 +346,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         do {
             try managedContext.save()
-            items.removeAtIndex(index)
+            //items.removeAtIndex(index)
         } catch let error as NSError  {
             print("Could not save \(error), \(error.userInfo)")
         }
@@ -384,7 +362,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // MARK: - Tableview Datasource
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.items.count
+        return self.journalItems.count
     }
     
     func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -400,8 +378,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        
-        print(self.tableView.subviews.count)
         
         let cellId = "listItem"
         var cell: listItem? = tableView.dequeueReusableCellWithIdentifier(cellId) as? listItem
@@ -421,14 +397,24 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 //
 //        cell?.backgroundColor = UIColor.whiteColor()
 //        
-        if (items.count > indexPath.row) {
-            let item = items[indexPath.row]
-            cell!.item = item
-            cell?.companyLabel.text = item.valueForKey("name") as? String
+        if (journalItems.count > indexPath.row) {
+            let journal = journalItems[indexPath.row]
+            cell!.item = journal
+            cell?.companyLabel.text = journal.valueForKey("place") as? String
         }
         
         return cell!
 
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        // journalItems[indexPath.row]
+        let selectedJournalVC = SelectedJournal()
+        
+        if (journalItems.count > indexPath.row) {
+            selectedJournalVC.journal = journalItems[indexPath.row]
+            self.navigationController?.pushViewController(selectedJournalVC, animated: true)
+        }
     }
 }
 

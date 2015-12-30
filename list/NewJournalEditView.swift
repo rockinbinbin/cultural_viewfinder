@@ -9,6 +9,10 @@
 import UIKit
 import CoreData
 
+protocol journalFinished : NSObjectProtocol {
+    func reloadViewController()
+}
+
 extension UIView {
     func fadeTransition(duration:CFTimeInterval) {
         let animation:CATransition = CATransition()
@@ -68,6 +72,8 @@ public class NewJournalEditView: UIView, UITextFieldDelegate, UITextViewDelegate
     var fourthAnswer : String?
     var fifthAnswer : String?
     
+    weak var viewControllerSuperclass : UIViewController?
+    weak var delegate: journalFinished?
     
     public lazy var cityTextField: UITextField = {
         let cityTextField = UITextField()
@@ -99,10 +105,10 @@ public class NewJournalEditView: UIView, UITextFieldDelegate, UITextViewDelegate
     var thissize : CGSize?
     var cgvos : CGPoint?
     
-    init(items: [NSManagedObject], size: CGSize) {
+    init(items: [NSManagedObject], size: CGSize, ViewController: UIViewController) {
         super.init(frame: CGRect(x: 0, y: 0, width: size.width, height: size.height))
         thissize = size
-        
+        viewControllerSuperclass = ViewController
         thisitems = items
         
         self.addSubview(scrollView)
@@ -149,22 +155,113 @@ public class NewJournalEditView: UIView, UITextFieldDelegate, UITextViewDelegate
     
     func plusPressed() {
         plusButton.enabled = false
-        
         textField1.becomeFirstResponder()
     }
     
     func nextPressed() {
+        
+        if (count == 0) {
+            firstAnswer = textField1.text
+        }
+        else if (count == 1) {
+            secondAnswer = textField1.text
+        }
+        else if (count == 2) {
+            thirdAnswer = textField1.text
+        }
+        else if (count == 3) {
+            fourthAnswer = textField1.text
+        }
+        else if (count == 4) {
+            fifthAnswer = textField1.text
+        }
+        
         if (count < 4) {
             count++
         }
         else {
-            // save journal entry and move forward to create + show journal entry
+            textField1.resignFirstResponder()
+            // save items + answers
+            
+            let appDelegate =
+            UIApplication.sharedApplication().delegate as! AppDelegate
+            let managedContext = appDelegate.managedObjectContext
+            
+            let itemEntity =  NSEntityDescription.entityForName("Item",
+                inManagedObjectContext:managedContext)
+            
+            //let item = NSManagedObject(entity: entity!,
+               // insertIntoManagedObjectContext: managedContext)
+            
+            var item = thisitems[0]
+            item.setValue(firstAnswer, forKey: "answer")
+            
+            item = thisitems[1]
+            item.setValue(secondAnswer, forKey: "answer")
+            
+            item = thisitems[2]
+            item.setValue(thirdAnswer, forKey: "answer")
+            
+            item = thisitems[3]
+            item.setValue(fourthAnswer, forKey: "answer")
+            
+            item = thisitems[4]
+            item.setValue(fifthAnswer, forKey: "answer")
+            
+            do {
+                try managedContext.save()
+                
+            } catch let error as NSError  {
+                print("Could not save \(error), \(error.userInfo)")
+            }
+            
+            // create journal entry from those items
+            let journalEntity = NSEntityDescription.insertNewObjectForEntityForName("Journal", inManagedObjectContext: appDelegate.managedObjectContext)
+            
+            journalEntity.setValue(NSDate(), forKey: "date")
+            journalEntity.setValue(cityTextField.text, forKey: "place")
+            
+            /// relationships now
+            
+//            let journalRelationship = NSRelationshipDescription()
+//            let itemRelationship = NSRelationshipDescription()
+            
+            let manyRelation = journalEntity.valueForKeyPath("relationship") as! NSMutableSet
+            manyRelation.addObject(thisitems[0])
+            manyRelation.addObject(thisitems[1])
+            manyRelation.addObject(thisitems[2])
+            manyRelation.addObject(thisitems[3])
+            manyRelation.addObject(thisitems[4])
+            
+//            itemRelationship.name = "relationship"
+//            itemRelationship.destinationEntity = journalEntity.entity
+////            neighborhoodRelationship.minCount = 0
+////            neighborhoodRelationship.maxCount = 0
+//            itemRelationship.deleteRule = NSDeleteRule.CascadeDeleteRule
+//            itemRelationship.inverseRelationship = journalRelationship
+//            
+//            journalRelationship.name = "relationship"
+//            journalRelationship.destinationEntity = itemEntity
+//            journalRelationship.
+////            cityRelationship.minCount = 0
+////            cityRelationship.maxCount = 1
+//            journalRelationship.deleteRule = NSDeleteRule.NullifyDeleteRule
+//            journalRelationship.inverseRelationship = itemRelationship
+            
+            
+            do {
+                try managedContext.save()
+                
+            } catch let error as NSError  {
+                print("Could not save \(error), \(error.userInfo)")
+            }
+            // transition to view controller + reload
+            delegate?.reloadViewController()
         }
-        let item = thisitems[count]
         
+        let item = thisitems[count]
         title.fadeTransition(0.4)
         title.text = item.valueForKey("name") as? String
-        
         textField1.text = ""
     }
     

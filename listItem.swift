@@ -31,7 +31,7 @@ class listItem: UITableViewCell {
         self.contentView.addSubview(companyLabel)
         return companyLabel
     }()
-    
+
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         layoutViews()

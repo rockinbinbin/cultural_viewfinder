@@ -68,10 +68,8 @@ class SelectedJournal: UIViewController, UITableViewDelegate, UITableViewDataSou
     }
     
     func configureNavBar() {
-        //        self.navigationController?.navigationBar.barTintColor = UIColor(hue: 216/360, saturation: 0.14, brightness: 0.21, alpha: 1)
-        //        self.navigationController?.navigationBar.tintColor = UIColor(hue: 216/360, saturation: 0.14, brightness: 0.21, alpha: 1)
-        self.navigationController?.navigationBar.barTintColor = UIColor.whiteColor()
-        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+                self.navigationController?.navigationBar.barTintColor = UIColor(hue: 216/360, saturation: 0.14, brightness: 0.21, alpha: 1)
+                self.navigationController?.navigationBar.tintColor = UIColor(hue: 216/360, saturation: 0.14, brightness: 0.21, alpha: 1)
         self.navigationController?.navigationBar.translucent = false
         
         let navLabel = UILabel()
@@ -111,7 +109,7 @@ class SelectedJournal: UIViewController, UITableViewDelegate, UITableViewDataSou
     }
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 100
+        return 300
     }
     
     func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
@@ -121,10 +119,10 @@ class SelectedJournal: UIViewController, UITableViewDelegate, UITableViewDataSou
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         let cellId = "listItem"
-        var cell: listItem? = tableView.dequeueReusableCellWithIdentifier(cellId) as? listItem
+        var cell: singleJournalDetailCell? = tableView.dequeueReusableCellWithIdentifier(cellId) as? singleJournalDetailCell
         
         if cell == nil {
-            cell = listItem()
+            cell = singleJournalDetailCell()
             cell?.selectionStyle = .None
         }
         
@@ -142,10 +140,9 @@ class SelectedJournal: UIViewController, UITableViewDelegate, UITableViewDataSou
             let journal = journalItems![indexPath.row]
             cell!.item = journal as? NSManagedObject
             cell?.companyLabel.text = journal.valueForKey("name") as? String
+            cell?.answerLabel.text = journal.valueForKey("answer") as? String
         }
-        
         return cell!
-        
     }
     
 //    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {

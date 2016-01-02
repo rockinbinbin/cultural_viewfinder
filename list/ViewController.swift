@@ -26,9 +26,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return tableView
     }()
     
-    var items = [NSManagedObject]()
+    //var items = [NSManagedObject]()
     var likedItems = [NSManagedObject]()
     var journalItems = [NSManagedObject]()
+    
+    var addButtonPressed : Bool?
     
     var dateResults  = [NSManagedObject]()
     var date : NSDate?
@@ -38,8 +40,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.whiteColor()
-        self.configureNavBar()
         self.createLayout()
+        addButtonPressed = false
     }
     
     func createLayout() {
@@ -47,6 +49,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func reloadViewController() {
+        addButtonPressed = false
         self.newJournalView?.hidden = true
         self.viewWillAppear(true)
         self.tableView.reloadData()
@@ -54,24 +57,20 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        self.fetchAllItems()
+        //self.fetchAllItems()
         self.fetchLikedItems()
         self.fetchDate()
         self.fetchJournalItems()
-        
-        if (items.count == 0) {
-            self.setInitialCoreData()
-        }
         
         if (date == nil) {
             self.initializeDate()
         }
         
-        if (journalItems.count == 0) {
+        if (journalItems.count == 0 || addButtonPressed == true) {
             
             // initialize view to create journal entry here
             if (newJournalView == nil) {
-                newJournalView = NewJournalEditView(items: items, size: self.view.frame.size, ViewController: self)
+                newJournalView = NewJournalEditView(size: self.view.frame.size, ViewController: self)
                 newJournalView?.delegate = self
                 
             }
@@ -81,7 +80,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             self.navigationController?.navigationBarHidden = true
         }
         else {
+            newJournalView = nil
             self.tableView.hidden = false
+            self.navigationController?.navigationBarHidden = false
+            self.configureNavBar()
         }
     }
     
@@ -146,24 +148,24 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
-    func fetchAllItems() {
-        let appDelegate =
-        UIApplication.sharedApplication().delegate as! AppDelegate
-        
-        let managedContext = appDelegate.managedObjectContext
-
-        let fetchRequest = NSFetchRequest(entityName: "Item")
-        
-        do {
-            let results =
-            try managedContext.executeFetchRequest(fetchRequest)
-            
-            items = results as! [NSManagedObject]
-            
-        } catch let error as NSError {
-            print("Could not fetch \(error), \(error.userInfo)")
-        }
-    }
+//    func fetchAllItems() {
+//        let appDelegate =
+//        UIApplication.sharedApplication().delegate as! AppDelegate
+//        
+//        let managedContext = appDelegate.managedObjectContext
+//
+//        let fetchRequest = NSFetchRequest(entityName: "Item")
+//        
+//        do {
+//            let results =
+//            try managedContext.executeFetchRequest(fetchRequest)
+//            
+//            items = results as! [NSManagedObject]
+//            
+//        } catch let error as NSError {
+//            print("Could not fetch \(error), \(error.userInfo)")
+//        }
+//    }
     
     func fetchJournalItems() {
         let appDelegate =
@@ -208,10 +210,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func configureNavBar() {
-//        self.navigationController?.navigationBar.barTintColor = UIColor(hue: 216/360, saturation: 0.14, brightness: 0.21, alpha: 1)
-//        self.navigationController?.navigationBar.tintColor = UIColor(hue: 216/360, saturation: 0.14, brightness: 0.21, alpha: 1)
-        self.navigationController?.navigationBar.barTintColor = UIColor.whiteColor()
-        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+        self.navigationController?.navigationBar.barTintColor = UIColor(hue: 216/360, saturation: 0.14, brightness: 0.21, alpha: 1)
+        self.navigationController?.navigationBar.tintColor = UIColor(hue: 216/360, saturation: 0.14, brightness: 0.21, alpha: 1)
         self.navigationController?.navigationBar.translucent = false
         
         let navLabel = UILabel()
@@ -219,13 +219,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         navLabel.backgroundColor = UIColor.clearColor()
         navLabel.textAlignment = NSTextAlignment.Center
         navLabel.font = UIFont(name: "AvenirNext-Medium", size: 20)
-        //navLabel.text = "Today"
+        navLabel.text = "Trips"
         self.navigationItem.titleView = navLabel
         navLabel.sizeToFit()
         
-//        let addButton  = UIBarButtonItem(image: UIImage(named: "whitePlus"), style: .Plain, target: self, action: Selector("addPressed"))
-//         addButton.tintColor = UIColor.whiteColor()
-//        self.navigationItem.rightBarButtonItem = addButton
+        let addButton  = UIBarButtonItem(image: UIImage(named: "whitePlus"), style: .Plain, target: self, action: Selector("addPressed"))
+         addButton.tintColor = UIColor.whiteColor()
+        self.navigationItem.rightBarButtonItem = addButton
     }
 
     override func didReceiveMemoryWarning() {
@@ -234,10 +234,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func addPressed() {
-        let searchVC = SearchViewController()
-        searchVC.items = items
-        searchVC.likedItems = likedItems
-        self.navigationController?.pushViewController(searchVC, animated: true)
+//        let searchVC = SearchViewController()
+//        searchVC.items = items
+//        searchVC.likedItems = likedItems
+//        self.navigationController?.pushViewController(searchVC, animated: true)
+        addButtonPressed = true
+        self.tableView.hidden = true
+        self.newJournalView?.hidden = false
+        self.viewWillAppear(true)
+        //self.tableView.reloadData()
+        
     }
     
     func createNewItem() {
@@ -270,46 +276,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             completion: nil)
     }
     
-    func setInitialCoreData() {
-        self.initializeItem("Have you heard positive or negative things about this culture/area? What were they?", category: "produce", liked: true)
-        
-        self.initializeItem("When you told your friends and family where you were going to this place, what did they say about it? How did you feel about these comments?", category: "produce", liked: true)
-        
-         self.initializeItem("Do you feel less safe in this area than your home town?", category: "meat", liked: false)
-        
-        self.initializeItem("When you travel, do you stay with people of that area or in a hotel for foreigners?", category: "meat", liked: false)
-        
-        self.initializeItem("When you go to another place do you eat at local, small restaurants or in restaurants of your own ethnicity?", category: "grain", liked: true)
-        
-
-    }
-    
-    func initializeItem(name : String, category : String, liked : Bool) {
-        
-        let appDelegate =
-        UIApplication.sharedApplication().delegate as! AppDelegate
-        let managedContext = appDelegate.managedObjectContext
-        
-        let entity =  NSEntityDescription.entityForName("Item",
-            inManagedObjectContext:managedContext)
-
-        
-        let item = NSManagedObject(entity: entity!,
-            insertIntoManagedObjectContext: managedContext)
-        
-        item.setValue(name, forKey: "name")
-        item.setValue(category, forKey: "category")
-        item.setValue(liked, forKey: "liked")
-        items.append(item)
-        
-        do {
-            try managedContext.save()
-            
-        } catch let error as NSError  {
-            print("Could not save \(error), \(error.userInfo)")
-        }
-    }
-    
     func saveName(name: String) {
         let appDelegate =
         UIApplication.sharedApplication().delegate as! AppDelegate
@@ -325,7 +291,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
         do {
             try managedContext.save()
-            items.append(item)
+            //items.append(item)
         } catch let error as NSError  {
             print("Could not save \(error), \(error.userInfo)")
         }

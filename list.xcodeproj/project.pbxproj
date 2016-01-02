@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		00374E101C2E798300C900CD /* NewJournalEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00374E0F1C2E798300C900CD /* NewJournalEditView.swift */; };
+		009D62771C333ED70080288C /* SelectedJournal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 009D62761C333ED70080288C /* SelectedJournal.swift */; };
+		009D62791C37720B0080288C /* singleJournalDetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 009D62781C37720B0080288C /* singleJournalDetailCell.swift */; };
 		00D3CE811C1A59DE0053BB8A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00D3CE801C1A59DE0053BB8A /* AppDelegate.swift */; };
 		00D3CE831C1A59DE0053BB8A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00D3CE821C1A59DE0053BB8A /* ViewController.swift */; };
 		00D3CE861C1A59DE0053BB8A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 00D3CE841C1A59DE0053BB8A /* Main.storyboard */; };
@@ -41,6 +43,8 @@
 /* Begin PBXFileReference section */
 		00374E0F1C2E798300C900CD /* NewJournalEditView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewJournalEditView.swift; sourceTree = "<group>"; };
 		00374E111C2E88EA00C900CD /* list-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "list-Bridging-Header.h"; sourceTree = "<group>"; };
+		009D62761C333ED70080288C /* SelectedJournal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectedJournal.swift; sourceTree = "<group>"; };
+		009D62781C37720B0080288C /* singleJournalDetailCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = singleJournalDetailCell.swift; sourceTree = "<group>"; };
 		00D3CE7D1C1A59DE0053BB8A /* list.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = list.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		00D3CE801C1A59DE0053BB8A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		00D3CE821C1A59DE0053BB8A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -112,6 +116,8 @@
 				00D3CEB11C1A5AB10053BB8A /* Autolayout.swift */,
 				00D3CEB31C1B5A400053BB8A /* listItem.swift */,
 				00D3CE821C1A59DE0053BB8A /* ViewController.swift */,
+				009D62761C333ED70080288C /* SelectedJournal.swift */,
+				009D62781C37720B0080288C /* singleJournalDetailCell.swift */,
 				00374E0F1C2E798300C900CD /* NewJournalEditView.swift */,
 				00D3CEB51C1BCFFC0053BB8A /* SearchViewController.swift */,
 				00D3CE841C1A59DE0053BB8A /* Main.storyboard */,
@@ -275,8 +281,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				00D3CEB61C1BCFFC0053BB8A /* SearchViewController.swift in Sources */,
+				009D62791C37720B0080288C /* singleJournalDetailCell.swift in Sources */,
 				00D3CEB41C1B5A400053BB8A /* listItem.swift in Sources */,
 				00374E101C2E798300C900CD /* NewJournalEditView.swift in Sources */,
+				009D62771C333ED70080288C /* SelectedJournal.swift in Sources */,
 				00D3CE831C1A59DE0053BB8A /* ViewController.swift in Sources */,
 				00D3CE811C1A59DE0053BB8A /* AppDelegate.swift in Sources */,
 				00D3CEB21C1A5AB10053BB8A /* Autolayout.swift in Sources */,

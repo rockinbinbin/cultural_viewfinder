@@ -36,6 +36,41 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var date : NSDate?
     
     var newJournalView : NewJournalEditView?
+    
+    internal lazy var onboardingLabel: UILabel = {
+        let onboardingLabel = UILabel()
+        onboardingLabel.translatesAutoresizingMaskIntoConstraints = false;
+        onboardingLabel.numberOfLines = 0
+        onboardingLabel.textColor = UIColor.grayColor()
+        onboardingLabel.text = "Want to document stories like Humans of New York? Ask locals our curated questions while traveling, and document their stories offline."
+        onboardingLabel.font = UIFont(name: "AvenirNext-Medium", size: 16.0)
+        self.view.addSubview(onboardingLabel)
+        return onboardingLabel
+    }()
+    
+    internal lazy var nextButton: UIButton = {
+        let nextButton = UIButton(type: .RoundedRect)
+        nextButton.layer.cornerRadius = 5
+        nextButton.backgroundColor = UIColor.whiteColor()
+        nextButton.layer.borderWidth = 1
+        nextButton.layer.borderColor = UIColor.blackColor().CGColor
+        nextButton.tintColor = UIColor.blackColor()
+        nextButton.setTitle("Let's go!", forState: .Normal)
+        
+        self.view.addSubview(nextButton)
+        nextButton.addTarget(self, action: Selector("nextPressed"), forControlEvents: .TouchUpInside)
+        
+        return nextButton
+    }()
+    
+    func nextPressed() {
+        for view in self.view.subviews {
+            if (!view.isKindOfClass(UITableView)) {
+                view.removeFromSuperview()
+            }
+        }
+        self.addPressed()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,8 +101,27 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             self.initializeDate()
         }
         
-        if (journalItems.count == 0 || addButtonPressed == true) {
+        if (journalItems.count == 0 && addButtonPressed == false) {
+            let img = UIImageView(image: UIImage(named: "girl"))
+            self.view.addSubview(img)
+            img.pinToBottomEdgeOfSuperview()
+            img.centerHorizontallyInSuperview()
+            img.sizeToHeight(self.view.frame.size.height/1.75)
             
+            self.view.addSubview(onboardingLabel)
+            self.view.addSubview(nextButton)
+
+            nextButton.positionAboveItem(img, offset: self.view.frame.size.height/20)
+            nextButton.centerHorizontallyInSuperview()
+            nextButton.sizeToWidth(100)
+            nextButton.sizeToHeight(50)
+            
+            onboardingLabel.positionAboveItem(nextButton, offset: 15)
+            onboardingLabel.centerHorizontallyInSuperview()
+            onboardingLabel.sizeToWidth(self.view.frame.size.width - 100)
+        }
+        
+        else if (addButtonPressed == true) {
             // initialize view to create journal entry here
             if (newJournalView == nil) {
                 newJournalView = NewJournalEditView(size: self.view.frame.size, ViewController: self)
@@ -219,7 +273,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         navLabel.backgroundColor = UIColor.clearColor()
         navLabel.textAlignment = NSTextAlignment.Center
         navLabel.font = UIFont(name: "AvenirNext-Medium", size: 20)
-        navLabel.text = "Trips"
+        navLabel.text = "Stories"
         self.navigationItem.titleView = navLabel
         navLabel.sizeToFit()
         
@@ -298,31 +352,30 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func toDoItemDeleted(toDoItem: NSManagedObject) {
-        let index = (journalItems as NSArray).indexOfObject(toDoItem)
-        if index == NSNotFound { return }
-        
-        let appDelegate =
-        UIApplication.sharedApplication().delegate as! AppDelegate
-        let managedContext = appDelegate.managedObjectContext
-        
-//        let entity =  NSEntityDescription.entityForName("Item",
-//            inManagedObjectContext:managedContext)
-        
-        managedContext.deleteObject(toDoItem)
-        
-        do {
-            try managedContext.save()
-            //items.removeAtIndex(index)
-        } catch let error as NSError  {
-            print("Could not save \(error), \(error.userInfo)")
-        }
-
-        
-        // use the UITableView to animate the removal of this row
-        tableView.beginUpdates()
-        let indexPathForRow = NSIndexPath(forRow: index, inSection: 0)
-        tableView.deleteRowsAtIndexPaths([indexPathForRow], withRowAnimation: .Fade)
-        tableView.endUpdates()    
+//        let index = (journalItems as NSArray).indexOfObject(toDoItem)
+//        if index == NSNotFound { return }
+//        
+//        let appDelegate =
+//        UIApplication.sharedApplication().delegate as! AppDelegate
+//        let managedContext = appDelegate.managedObjectContext
+//        
+////        let entity =  NSEntityDescription.entityForName("Item",
+////            inManagedObjectContext:managedContext)
+//        
+//        managedContext.deleteObject(toDoItem)
+//        
+//        do {
+//            try managedContext.save()
+//            //items.removeAtIndex(index)
+//        } catch let error as NSError  {
+//            print("Could not save \(error), \(error.userInfo)")
+//        }
+//        
+//        // use the UITableView to animate the removal of this row
+//        tableView.beginUpdates()
+//        let indexPathForRow = NSIndexPath(forRow: index, inSection: 0)
+//        tableView.deleteRowsAtIndexPaths([indexPathForRow], withRowAnimation: .Fade)
+//        tableView.endUpdates()    
     }
 
     // MARK: - Tableview Datasource

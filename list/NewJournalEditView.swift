@@ -24,7 +24,7 @@ extension UIView {
     }
 }
 
-public class NewJournalEditView: UIView, UITextFieldDelegate, UITextViewDelegate, UIScrollViewDelegate {
+public class NewJournalEditView: UIView, UITextFieldDelegate, UITextViewDelegate {
 
     public lazy var title: UILabel = {
         let title = UILabel()
@@ -97,12 +97,6 @@ public class NewJournalEditView: UIView, UITextFieldDelegate, UITextViewDelegate
         return textField1
     }()
     
-    public lazy var scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.delegate = self
-        return scrollView
-    }()
-    
     var thissize : CGSize?
     var cgvos : CGPoint?
     
@@ -113,11 +107,6 @@ public class NewJournalEditView: UIView, UITextFieldDelegate, UITextViewDelegate
         
         thissize = size
         viewControllerSuperclass = ViewController
-        
-        self.addSubview(scrollView)
-        scrollView.sizeToWidth((thissize?.width)!)
-        scrollView.sizeToHeight((thissize?.height)! * 2)
-        scrollView.pinToEdgesOfSuperview()
         
         let item = items[0]
         title.text = item.valueForKey("name") as? String
@@ -262,19 +251,7 @@ public class NewJournalEditView: UIView, UITextFieldDelegate, UITextViewDelegate
         
     }
     
-    public func textFieldDidBeginEditing(textField: UITextField) {
-        cgvos = scrollView.contentOffset
-        var pt : CGPoint
-        var rc = textField.bounds
-        rc = textField.convertRect(rc, toView: scrollView)
-        pt = rc.origin;
-        pt.x = 0;
-        pt.y -= 60;
-        scrollView.setContentOffset(pt, animated: true)
-    }
-    
     public func textFieldShouldReturn(textField: UITextField) -> Bool {   //delegate method
-        scrollView.setContentOffset(cgvos!, animated: true)
         textField.resignFirstResponder()
         return true
     }

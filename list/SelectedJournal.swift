@@ -73,13 +73,21 @@ class SelectedJournal: UIViewController, UITableViewDelegate, UITableViewDataSou
         self.navigationController?.navigationBar.translucent = false
         
         let navLabel = UILabel()
-        navLabel.textColor = UIColor.blackColor()
+        navLabel.textColor = UIColor.whiteColor()
         navLabel.backgroundColor = UIColor.clearColor()
         navLabel.textAlignment = NSTextAlignment.Center
         navLabel.font = UIFont(name: "AvenirNext-Medium", size: 20)
         navLabel.text = journal?.valueForKey("place") as? String
         self.navigationItem.titleView = navLabel
         navLabel.sizeToFit()
+        
+        let backButton = UIButton(type: .Custom)
+        backButton.setImage(UIImage(named: "backArrow"), forState: .Normal)
+        let img = UIImage(named: "backArrow")!
+        backButton.bounds = CGRectMake(0, 0, img.size.width, img.size.height)
+        
+        backButton.addTarget(self, action: "backButtonPressed", forControlEvents: .TouchUpInside)
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
         
         //        let addButton  = UIBarButtonItem(image: UIImage(named: "whitePlus"), style: .Plain, target: self, action: Selector("addPressed"))
         //         addButton.tintColor = UIColor.whiteColor()
@@ -89,6 +97,10 @@ class SelectedJournal: UIViewController, UITableViewDelegate, UITableViewDataSou
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    internal func backButtonPressed() {
+        self.navigationController?.popViewControllerAnimated(true)
     }
     
     func addPressed() {
